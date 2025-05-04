@@ -116,6 +116,9 @@ func generateSessionId() string {
 func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%#v", r.URL.Path)
 
+	// NOTE: disallow any framing by any origin (CRSF)
+	w.Header().Set("x-frame-options", "DENY")
+
 	var session, username string
 	sessions := r.CookiesNamed("session")
 	if len(sessions) > 0 {
@@ -149,7 +152,7 @@ func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Name:     "session",
 			HttpOnly: true,                    // no JavaScript access
 			MaxAge:   60 * 60 * 24 * 90,       // ~3 months
-			SameSite: http.SameSiteStrictMode, // instead of CSRF
+			SameSite: http.SameSiteStrictMode, // instead of CSRF token
 			Value:    id,
 		})
 		app.stmtNewSession.Exec(id, username)
