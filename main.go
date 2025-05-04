@@ -116,7 +116,7 @@ func generateSessionId() string {
 func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%#v", r.URL.Path)
 
-	// NOTE: disallow any framing by any origin (CRSF)
+	// NOTE: disallow any framing by any origin (clickjacking)
 	w.Header().Set("x-frame-options", "DENY")
 
 	var session, username string
